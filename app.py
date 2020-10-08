@@ -49,7 +49,7 @@ def edit_song(song_id):
 
 #================================================================
 if __name__ == "__main__":
-    print(func.open_data()[1].id)
+    #print(func.open_data()[0].id)
 
     if not os.path.isfile('data/songs.pickle'):
         if not os.path.isdir('data'):

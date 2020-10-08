@@ -34,12 +34,15 @@ def update_data(song, song_id):
     songs = open_data()
 
     try:
-        song_id = int(song_id)
+        song_id = song_id
     except ValueError:
         return False
 
     for obj in songs:
+        #print(obj.id, type(obj.id), song_id, type(song_id))
+        
         if obj.id == song_id:
+            song.id = song_id
             songs[songs.index(obj)] = song
 
             with open(patch, 'wb') as pfile:
@@ -56,7 +59,7 @@ def remove_data(song_id):
     songs = open_data()
 
     try:
-        song_id = int(song_id)
+        song_id = song_id
     except ValueError:
         return False
 
