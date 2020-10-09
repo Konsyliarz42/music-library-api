@@ -10,6 +10,7 @@ app = Flask(__name__)
 #--------------------------------
 @app.route('/songs', methods=['GET'])
 def get_songs():
+    func.check_files()
     songs = [song.in_dict for song in func.open_data()]
     return jsonify(songs)
 
@@ -21,6 +22,7 @@ def add_song():
                     form['album_name'],
                     form['nr'],
                     form['title']   )
+    func.check_files()
                     
     if func.add_to_data(song):
         return form, 201
@@ -30,6 +32,8 @@ def add_song():
 #--------------------------------
 @app.route('/songs/<song_id>', methods=['PUT', 'DELETE'])
 def edit_song(song_id):
+    func.check_files()
+    
     if request.method == 'PUT':
         form = request.get_json()
         song = Song(    form['band_name'],
@@ -50,12 +54,4 @@ def edit_song(song_id):
 #================================================================
 if __name__ == "__main__":
     #print(func.open_data()[0].id)
-
-    if not os.path.isfile('data/songs.pickle'):
-        if not os.path.isdir('data'):
-            os.mkdir('data')
-
-        open('data/songs.pickle', 'wb').close()
-        print("'songs.pickle' is now crated!")
-
     app.run()

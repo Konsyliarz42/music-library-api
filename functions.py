@@ -3,6 +3,15 @@ import os, pickle
 from classes import Song
 
 #--------------------------------
+def check_files():
+    if not os.path.isfile('data/songs.pickle'):
+        if not os.path.isdir('data'):
+            os.mkdir('data')
+
+        open('data/songs.pickle', 'wb').close()
+        print("'songs.pickle' is now crated!")
+
+#--------------------------------
 def open_data():
     patch = 'data/songs.pickle'
     songs = list()
