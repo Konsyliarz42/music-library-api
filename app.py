@@ -18,39 +18,97 @@ def get_songs():
 @app.route('/songs', methods=['POST'])
 def add_song():
     form = request.get_json()
-    song = Song(    form['band_name'],
-                    form['album_name'],
-                    form['nr'],
-                    form['title']   )
-    func.check_files()
-                    
-    if func.add_to_data(song):
-        return form, 201
-    else:
-        abort(400, description="Resource is already in database")
-
-#--------------------------------
-@app.route('/songs/<song_id>', methods=['PUT', 'DELETE'])
-def edit_song(song_id):
-    func.check_files()
     
-    if request.method == 'PUT':
-        form = request.get_json()
+    try:
         song = Song(    form['band_name'],
                         form['album_name'],
                         form['nr'],
                         form['title']   )
+    except KeyError:
+        abort(400, description="Resource is not complete")
+
+    func.check_files()
+    songs   = [obj.in_dict for obj in func.open_data()]
+    nrs     = [x['nr'] for x in songs]
+    albums  = [x['album_name'] for x in songs]
+
+    if song.nr in nrs and song.album_name in albums:
+        error = {"error":"Nr is allready in album"}
+        return jsonify(form, error), 409
+                    
+    if func.add_to_data(song):
+        return form, 201
+    else:
+        error = {"error":"Resource is allready in database"}
+        return jsonify(form, error), 409
+
+#--------------------------------
+@app.route('/songs/<band_name>/<album_name>/<nr>', methods=['PUT', 'DELETE'])
+def edit_song(band_name, album_name, nr):
+    func.check_files()
+    song = func.check_song(band_name, album_name, nr)
+
+    if not song or ' ' in band_name or ' ' in album_name or ' ' in nr:
+        abort(404)
+    else:
+        song_id = song.id
+    
+    if request.method == 'PUT':
+        form = request.get_json()
+
+        try:
+            song = Song(    form['band_name'],
+                            form['album_name'],
+                            form['nr'],
+                            form['title']   )
+        except KeyError:
+            abort(400, description="Resource is not complete")
 
         if not func.update_data(song, song_id):
-            abort(404, description="Song ID is incorrect")
+            abort(404)
         else:
             return form
     else:
         if not func.remove_data(song_id):
-            abort(404, description="Song ID is incorrect")
+            abort(404)
         else:
             return jsonify({}), 204
 
+#--------------------------------
+@app.route('/songs/<band_name>/<album_name>/<nr>', methods=['GET'])
+def get_song(band_name, album_name, nr):
+    func.check_files()
+    song = func.check_song(band_name, album_name, nr)
+
+    if not song or ' ' in band_name or ' ' in album_name or ' ' in nr:
+        abort(404)
+    else:
+        return song.in_dict
+
+#--------------------------------
+@app.route('/songs/<band_name>/<album_name>', methods=['GET'])
+def get_album(band_name, album_name):
+    func.check_files()
+    songs = func.open_data()
+    albums = [song.in_dict for song in songs if song.album_name == album_name.replace('-',' ')]
+ 
+    if not albums or ' ' in band_name or ' ' in album_name:
+        abort(404)
+    else:
+        return jsonify(albums)
+        
+#--------------------------------
+@app.route('/songs/<band_name>', methods=['GET'])
+def get_band(band_name):
+    func.check_files()
+    songs = func.open_data()
+    bands = [song.album_name for song in songs if song.band_name == band_name.replace('-',' ')]
+ 
+    if not bands or ' ' in band_name:
+        abort(404)
+    else:
+        return jsonify(list(set(bands)))
+      
 #================================================================
 if __name__ == "__main__":
     #print(func.open_data()[0].id)

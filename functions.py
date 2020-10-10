@@ -27,9 +27,10 @@ def open_data():
 
 #--------------------------------
 def add_to_data(song):
-    patch = 'data/songs.pickle'
+    patch   = 'data/songs.pickle'
+    songs   = [obj.in_dict for obj in open_data()]
 
-    if song.in_dict in [obj.in_dict for obj in open_data()]:
+    if song.in_dict in songs:
         return False
 
     with open(patch, 'ab') as pfile:
@@ -48,8 +49,6 @@ def update_data(song, song_id):
         return False
 
     for obj in songs:
-        #print(obj.id, type(obj.id), song_id, type(song_id))
-        
         if obj.id == song_id:
             song.id = song_id
             songs[songs.index(obj)] = song
@@ -82,5 +81,20 @@ def remove_data(song_id):
                     pickle.dump(song, pfile)
 
             return True
+
+    return False
+
+#--------------------------------
+def check_song(band, album, nr):
+    songs   = open_data()
+    band    = band.replace('-', ' ')
+    album   = album.replace('-', ' ')
+    nr      = str(int(nr)).zfill(2)
+
+    for obj in songs:
+        song = obj.in_dict
+
+        if song['band_name'] == band and song['album_name'] == album and song["nr"] == nr:
+            return obj
 
     return False
