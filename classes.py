@@ -5,7 +5,7 @@ class Song():
     def __init__(self, band_name='-', album_name='-', nr=0, title='-'):
         self.band_name = band_name.lower()
         self.album_name = album_name.lower()
-        self.nr = str(int(nr)).zfill(2)
+        self.nr = int(nr)
         self.title = title.lower()
         self.id = str(uuid.uuid4())
 

@@ -89,7 +89,7 @@ def check_song(band, album, nr):
     songs   = open_data()
     band    = band.replace('-', ' ')
     album   = album.replace('-', ' ')
-    nr      = str(int(nr)).zfill(2)
+    nr      = int(nr)
 
     for obj in songs:
         song = obj.in_dict

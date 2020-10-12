@@ -29,10 +29,10 @@ def add_song():
 
     func.check_files()
     songs   = [obj.in_dict for obj in func.open_data()]
-    nrs     = [x['nr'] for x in songs]
-    albums  = [x['album_name'] for x in songs]
+    item    = (song.nr, song.album_name, song.band_name)
+    items   = [(x['nr'], x['album_name'], x['band_name']) for x in songs]
 
-    if song.nr in nrs and song.album_name in albums:
+    if item in items:
         error = {"error":"Nr is allready in album"}
         return jsonify(form, error), 409
                     
@@ -59,7 +59,7 @@ def edit_song(band_name, album_name, nr):
         try:
             song = Song(    form['band_name'],
                             form['album_name'],
-                            form['nr'],
+                            int(form['nr']),
                             form['title']   )
         except KeyError:
             abort(400, description="Resource is not complete")
