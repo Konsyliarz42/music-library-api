@@ -43,16 +43,10 @@ def add_song():
         return jsonify(form, error), 409
 
 #--------------------------------
-@app.route('/songs/<band_name>/<album_name>/<nr>', methods=['PUT', 'DELETE'])
-def edit_song(band_name, album_name, nr):
+@app.route('/songs/<song_id>', methods=['PUT', 'DELETE'])
+def edit_song_by_id(song_id):
     func.check_files()
-    song = func.check_song(band_name, album_name, nr)
 
-    if not song or ' ' in band_name or ' ' in album_name or ' ' in nr:
-        abort(404)
-    else:
-        song_id = song.id
-    
     if request.method == 'PUT':
         form = request.get_json()
 
@@ -75,6 +69,18 @@ def edit_song(band_name, album_name, nr):
             return jsonify({}), 204
 
 #--------------------------------
+@app.route('/songs/<band_name>/<album_name>/<nr>', methods=['PUT', 'DELETE'])
+def edit_song(band_name, album_name, nr):
+    song = func.check_song(band_name, album_name, nr)
+
+    if not song or ' ' in band_name or ' ' in album_name or ' ' in nr:
+        abort(404)
+    else:
+        song_id = song.id
+    
+    return edit_song_by_id(song_id)
+
+#--------------------------------
 @app.route('/songs/<band_name>/<album_name>/<nr>', methods=['GET'])
 def get_song(band_name, album_name, nr):
     func.check_files()
@@ -84,6 +90,17 @@ def get_song(band_name, album_name, nr):
         abort(404)
     else:
         return song.in_dict
+
+#--------------------------------
+@app.route('/songs/<song_id>', methods=['GET'])
+def get_song_by_id(song_id):
+    func.check_files()
+    song = [x for x in func.open_data() if x.id == song_id]
+
+    if song:
+        return song[0].in_dict
+    else:
+        abort(404)
 
 #--------------------------------
 @app.route('/songs/<band_name>/<album_name>', methods=['GET'])
