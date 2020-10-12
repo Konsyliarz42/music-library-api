@@ -28,9 +28,8 @@ def open_data():
 #--------------------------------
 def add_to_data(song):
     patch   = 'data/songs.pickle'
-    songs   = [obj.in_dict for obj in open_data()]
-
-    if song.in_dict in songs:
+    
+    if song.data in [x.data for x in open_data()]:
         return False
 
     with open(patch, 'ab') as pfile:
@@ -40,13 +39,13 @@ def add_to_data(song):
 
 #--------------------------------
 def update_data(song, song_id):
-    patch = 'data/songs.pickle'
-    songs = open_data()
-
     try:
         song_id = song_id
     except ValueError:
         return False
+    else:
+        patch = 'data/songs.pickle'
+        songs = open_data()
 
     for obj in songs:
         if obj.id == song_id:
@@ -63,13 +62,13 @@ def update_data(song, song_id):
 
 #--------------------------------
 def remove_data(song_id):
-    patch = 'data/songs.pickle'
-    songs = open_data()
-
     try:
         song_id = song_id
     except ValueError:
         return False
+    else:
+        patch = 'data/songs.pickle'
+        songs = open_data()
 
     for obj in songs:
         if obj.id == song_id:
@@ -86,13 +85,12 @@ def remove_data(song_id):
 
 #--------------------------------
 def check_song(band, album, nr):
-    songs   = open_data()
-    band    = band.replace('-', ' ')
-    album   = album.replace('-', ' ')
+    band    = band.replace('-', ' ').lower()
+    album   = album.replace('-', ' ').lower()
     nr      = int(nr)
 
-    for obj in songs:
-        song = obj.in_dict
+    for obj in open_data():
+        song = obj.data
 
         if song['band_name'] == band and song['album_name'] == album and song["nr"] == nr:
             return obj

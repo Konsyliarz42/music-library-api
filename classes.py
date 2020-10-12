@@ -3,10 +3,10 @@ import uuid
 #================================================================
 class Song():
     def __init__(self, band_name='-', album_name='-', nr=0, title='-'):
-        self.band_name = band_name.lower()
-        self.album_name = album_name.lower()
+        self.band_name = band_name
+        self.album_name = album_name
         self.nr = int(nr)
-        self.title = title.lower()
+        self.title = title
         self.id = str(uuid.uuid4())
 
 
@@ -14,29 +14,18 @@ class Song():
         return f"{self.band_name.capitalize()} - {self.title.capitalize()}"
 
     @property
+    def data(self):
+        song = {    'band_name': self.band_name.lower(),
+                    'album_name': self.album_name.lower(),
+                    'nr': self.nr,
+                    'title': self.title.lower() }
+        return song
+
+    @property
     def in_dict(self):
         song = {    'band_name': self.band_name,
                     'album_name': self.album_name,
                     'nr': self.nr,
-                    'title': self.title }
+                    'title': self.title,
+                    'id': self.id   }
         return song
-
-#================================================================
-class Album():
-    def __init__(self, band_name=None, album_name=None, year=0):
-        self.band_name = band_name
-        self.album_name = album_name
-        self.year = str(int(year))
-        self.songs = list()
-        self.id = str(uuid.uuid4())
-
-    def __repr__(self):
-        return f"({self.year}) {self.album_name}"
-
-    @property
-    def in_dict(self):
-        album = {   'band_name': self.band_name,
-                    'album_name': self.album_name,
-                    'year': self.year,
-                    'songs': self.songs }
-        return album
