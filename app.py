@@ -85,7 +85,10 @@ def get_song(band_name, album_name, nr):
     func.check_files()
     song = func.check_song(band_name, album_name, nr)
 
-    return song.in_dict
+    if song:
+        return song.in_dict
+    else:
+        abort(404)
 
 #--------------------------------
 @app.route('/songs/<song_id>', methods=['GET'])
